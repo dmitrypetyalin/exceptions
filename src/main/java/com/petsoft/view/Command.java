@@ -1,4 +1,4 @@
-package com.petsoft.domain;
+package com.petsoft.view;
 
 /**
  * @author PetSoft
@@ -7,6 +7,7 @@ package com.petsoft.domain;
 public enum Command {
     ADD,
     LIST,
+    WRITE,
     FIND,
     DELETE,
     EXIT,

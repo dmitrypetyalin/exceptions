@@ -4,11 +4,10 @@ package com.petsoft.exception;
  * @author PetSoft
  * @date 04.05.2024 14:18
  */
-public class IncorrectLengthException extends Exception {
-    private final int length;
+public class IncorrectArgumentLengthException extends RuntimeException {
 
-    public IncorrectLengthException(String message, int length) {
+    public IncorrectArgumentLengthException(String message) {
         super(message);
-        this.length = length;
     }
+
 }
