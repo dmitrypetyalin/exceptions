@@ -32,9 +32,7 @@ public class View implements iView {
                     break;
 
                 case LIST:
-
-//                    printAllPersons();
-
+                    printAllPersons(controller.getPersons());
                     break;
 
                 case ADD:
@@ -43,20 +41,19 @@ public class View implements iView {
                     break;
 
                 case WRITE:
-
+                    System.out.println(controller.writePersons());
                     break;
             }
-
         }
     }
 
-//    public void printAllPersons(List<Person> students) {
-//        System.out.println("---------------------- Persons list ------------------------------");
-//        for (Person p : students) {
-//            System.out.println(p);
-//        }
-//        System.out.println("------------------------------------------------------------------");
-//    }
+    public void printAllPersons(List<Person> persons) {
+        System.out.println("---------------------- Persons list ------------------------------");
+        for (Person p : persons) {
+            System.out.println(p);
+        }
+        System.out.println("------------------------------------------------------------------");
+    }
 
     public String prompt(String msg) {
         Scanner in = new Scanner(System.in);

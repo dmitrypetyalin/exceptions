@@ -5,13 +5,13 @@ import com.petsoft.exception.IncorrectArgumentLengthException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.io.*;
 
 /**
  * @author PetSoft
@@ -20,7 +20,7 @@ import java.util.*;
 public class Util {
     private static final Logger LOG = LoggerFactory.getLogger(Util.class);
     private static final String fileSeparator = File.separator;
-    private static String path = "C:" + fileSeparator + "Users" + fileSeparator + "dmitr" + fileSeparator + "IdeaProjects"
+    private static final String path = "C:" + fileSeparator + "Users" + fileSeparator + "dmitr" + fileSeparator + "IdeaProjects"
             + fileSeparator + "exceptions" + fileSeparator + "src" + fileSeparator + "main" + fileSeparator + "java" + fileSeparator + "files";
 
     //Creating new file if there aren't Создание нового файла, если такового не существует
@@ -38,20 +38,18 @@ public class Util {
     }
 
     public static void writePersonsToFiles(List<Person> people) {
-
         for (Person person : people) {
             String fileName = path + person.getSurname();
             File file = createFile(fileName);
             writeFile(file, person);
         }
-
-
     }
 
     private static void writeFile(File file, Person p) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+        //TODO closing file with try-with-resources or with finally
+        try (FileWriter fileWriter = new FileWriter(file, true)) {
 
-            writer.write(p.getSurname() + " " + p.getName() + " " + p.getPatronymic() + " " + p.getBirthDate() + " " + p.getPhoneNumber() + " " + p.getSex());
+            fileWriter.write(p.getSurname() + " " + p.getName() + " " + p.getPatronymic() + " " + p.getBirthDate() + " " + p.getPhoneNumber() + " " + p.getSex());
 
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
@@ -59,23 +57,41 @@ public class Util {
     }
 
     public static List<Person> readFiles() {
-        List<Person> people = new ArrayList<>();
-        List<File> files = new ArrayList<>();
+        //TODO this method
+        List<Person> persons = new ArrayList<>();
         File directory = new File(path);
-        files = List.of(Objects.requireNonNull(directory.listFiles()));
-
+        List<File> files = List.of(Objects.requireNonNull(directory.listFiles()));
         for (File file : files) {
-            System.out.println(file.getName());
+            persons.addAll(readFile(file));
         }
-
-        return people;
+        return persons;
     }
 
-    static String[] parseString(String details) throws ParseException {
+    private static List<Person> readFile(File file) {
+        //TODO this method
+        List<Person> persons = new ArrayList<>();
+        try {
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] arr = line.split(" ");
+                persons.add(new Person(arr[0], arr[1], arr[2], arr[3], Integer.parseInt(arr[4]), arr[5]));
+            }
+            br.close();
+            fr.close();
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        }
+
+        return persons;
+    }
+
+    static String[] parseString(String details) throws ParseException, IncorrectArgumentLengthException {
         String[] params = details.split(" ");
 
         if (params.length != 6) {
-            throw new IncorrectArgumentLengthException("Incorrect quantity details of person: " + params.length);
+            throw new IncorrectArgumentLengthException("Incorrect quantity of person's details : " + params.length);
         }
 
         if (params[0].length() < 2) {
@@ -105,7 +121,7 @@ public class Util {
         return params;
     }
 
-    static int getPhoneNumber(String number) {
+    static int getPhoneNumber(String number) throws IncorrectArgumentLengthException {
         if (number.length() < 7 || number.length() > 11) {
             throw new IncorrectArgumentLengthException("Phone number is incorrect: " + number.length());
         }

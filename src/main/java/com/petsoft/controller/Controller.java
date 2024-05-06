@@ -5,7 +5,7 @@ import com.petsoft.domain.Person;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.petsoft.controller.Util.getPhoneNumber;
+import static com.petsoft.controller.Util.*;
 
 /**
  * @author PetSoft
@@ -14,13 +14,13 @@ import static com.petsoft.controller.Util.getPhoneNumber;
 public class Controller {
     private static Controller INSTANCE;
     private List<Person> persons;
-    private List<Person> addedPersons;
+    private List<Person> newPersons;
 
 
     private Controller() {
-        this.persons = new ArrayList<>();
-        this.persons = Util.readFiles();//TODO fill in persons from files
-        this.addedPersons = new ArrayList<>();
+//        this.persons = new ArrayList<>();
+        this.persons = getPersonsFromFile();//TODO fill in persons from files
+        this.newPersons = new ArrayList<>();
     }
 
     public static Controller getInstance() {
@@ -34,18 +34,28 @@ public class Controller {
         return persons;
     }
 
+    private List<Person> getPersonsFromFile() {
+        return readFiles();
+    }
+
     public String addPerson(String details) {
+        if (details == null || details.isEmpty()) {
+            return "String is empty";
+        }
         try {
             String[] params = Util.parseString(details);
-            addedPersons.add(new Person(params[0], params[1], params[2], params[3], getPhoneNumber(params[4]), params[5]));
+            newPersons.add(new Person(params[0], params[1], params[2], params[3], getPhoneNumber(params[4]), params[5]));
         } catch (Exception ex) {
             return ex.toString();
         }
         return "Person was successfully added";
     }
 
-    public void writePersons() {
-
+    public String writePersons() {
+        writePersonsToFiles(newPersons);
+        persons.addAll(newPersons);
+        newPersons.clear();
+        return "Persons successfully wrote";
     }
 
 
